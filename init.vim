@@ -2,7 +2,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " =====插件=====
 
-"c/c++自动补齐插件
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" c/c++自动补齐插件
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 " vim run :CocInstall coc-clangd
 " vim run :CocCommand clangd.install
@@ -12,6 +12,10 @@ call plug#begin('~/.local/share/nvim/plugged')
     " clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/12.0.1/clangd_12.0.1/bin/clangd"
 " }
 
+"copilot AI"
+Plug 'github/copilot.vim'
+
+Plug 'uarun/vim-protobuf'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -27,7 +31,7 @@ Plug 'akinsho/nvim-bufferline.lua'
 Plug 'vim-airline/vim-airline'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'scrooloose/nerdcommenter'
-Plug 'windwp/nvim-autopairs'
+Plug 'windwp/nvim-autopairs', {'commit': 'dffcd00e'}
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-abolish'
@@ -45,8 +49,11 @@ call plug#end()
 
 " =====基础配置=====
 
+set mouse=a
 set termguicolors
-set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,latin1
+set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,latin1,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
 
 set updatetime=300
 set shortmess+=csI
@@ -472,15 +479,6 @@ require('nvim-treesitter.configs').setup {
 --
 
 require('bufferline').setup{
-  options = {
-    numbers = "ordinal",
-    mappings = true,
-    number_style = "",
-    offsets = {{filetype = "coc-explorer", text = "coc-explorer"}},
-    show_buffer_close_icons = false,
-    show_close_icon = false,
-    separator_style = "thin",
-  }
 }
 
 --
@@ -570,3 +568,50 @@ vnoremap <Down> <Nop>
 vnoremap <Left> <Nop>
 vnoremap <Right> <Nop>
 vnoremap <Up> <Nop>
+
+" =====bufferline=====
+nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
+nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
+nnoremap <silent><leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
+nnoremap <silent><leader>4 <Cmd>BufferLineGoToBuffer 4<CR>
+nnoremap <silent><leader>5 <Cmd>BufferLineGoToBuffer 5<CR>
+nnoremap <silent><leader>6 <Cmd>BufferLineGoToBuffer 6<CR>
+nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
+nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
+nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
+
+" ===== autoadd code ====
+autocmd BufNewFile *.cpp,*.c,*.h,*.go,*.sh, exec ":call SetTitle()"
+let $author_name  = "aico"
+let $author_email = "2237616014@qq.com"
+let $author_github = "https://github.com/TBBtianbaoboy"
+let $author_site = "https://www.lengyangyu520.cn"
+
+func SetTitle()
+if &filetype == 'sh'
+call setline(1,"\#!/bin/sh")
+call append(line("."),   "\#File Name    : ".expand("%"))
+call append(line(".")+1, "\#Author       : ".$author_name)
+call append(line(".")+2, "\#Mail         : ".$author_email)
+call append(line(".")+3, "\#Github       : ".$author_github)
+call append(line(".")+4, "\#Site         : ".$author_site)
+call append(line(".")+5, "\#Create Time  : ".strftime("%Y-%m-%d %H:%M:%S"))
+call append(line(".")+6, "\#Description  : ")
+call append(line(".")+7, "")
+call append(line(".")+8, "\#:for debugging and controlling script behavior")
+call append(line(".")+9, "set -euo pipefail")
+call append(line(".")+10, "\#:check script but not execute,below is example.")
+call append(line(".")+11, "\#bash -n main.sh")
+else
+call setline(1,"//---------------------------------")
+call append(line("."),   "//File Name    : ".expand("%"))
+call append(line(".")+1, "//Author       : ".$author_name)
+call append(line(".")+2, "//Mail         : ".$author_email)
+call append(line(".")+3, "//Github       : ".$author_github)
+call append(line(".")+4, "//Site         : ".$author_site)
+call append(line(".")+5, "//Create Time  : ".strftime("%Y-%m-%d %H:%M:%S"))
+call append(line(".")+6, "//Description  : ")
+call append(line(".")+7, "//----------------------------------")
+endif
+endfunc
+autocmd BufNewfile * normal G

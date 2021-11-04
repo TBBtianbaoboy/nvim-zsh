@@ -114,8 +114,9 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 #vim
-alias vim='nvim'
+alias v='nvim'
 alias vi='nvim'
+alias vim='nvim'
 #ls
 alias ls='lsd'
 alias lsl='ls -lh'
@@ -139,7 +140,7 @@ export GOBINPATH="$HOME/go/bin"
 export GOPROXY=https://goproxy.io,direct
 export GO111MODULE=on
 #k8s
-export KUBECONFIG=/etc/kubernetes/admin.conf
+# export KUBECONFIG=/etc/kubernetes/admin.conf
 #minikube
 ##export NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.99.0/24,192.168.39.0/24
 
@@ -148,11 +149,19 @@ alias docker='sudo docker'
 #directory stack
 alias pd='pushd'
 alias dp='popd'
-alias cat='ccat'
+# alias cat='ccat'
 #tldr
 alias tldr='tldr -t ocean'
 #man retry to nvim
 export MANPAGER='nvim +Man!'
+#grpc config 
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+export LD_LIBRARY_PATH=/usr/local/lib
+#private env 
+alias nla='v ~/github/note/linux/all.sh'
+alias nlv='v ~/github/note/linux/nvim.sh'
+alias nlc='v ~/github/note/linux/command.sh'
+alias nlt='cd ~/github/note/tools'
 #clash proxy
 ##export http_proxy=http://127.0.0.1:7890 && export https_proxy=http://127.0.0.1:7890
 ##unset http_proxy && unset https_proxy
@@ -160,6 +169,7 @@ export MANPAGER='nvim +Man!'
 #enjory_tools
 eval $(thefuck --alias)
 
+for i in {0..9}; do bindkey -r "^[$i"; done
 #node
 export PATH=$PATH:/usr/local/node/bin
 #easy function
@@ -220,4 +230,8 @@ if [ -n "$1" ] ; then
     fi
 }
 
+#git diff with nvim 
+alias gdvim='git difftool -t nvimdiff'
 
+#weather reporter
+alias wea='curl wttr.in'
