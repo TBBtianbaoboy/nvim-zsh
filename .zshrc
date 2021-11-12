@@ -1,14 +1,22 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/aico/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="jonathan"
+# ZSH_THEME="jonathan"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -80,6 +88,7 @@ plugins=(
 	sudo     #自动添加sudo ,两下esc
 	extract #万能解压 x 压缩包名
 	ripgrep
+    kubectl
 	zsh-autosuggestions
 	zsh-syntax-highlighting
 )
@@ -117,6 +126,10 @@ source $ZSH/oh-my-zsh.sh
 alias v='nvim'
 alias vi='nvim'
 alias vim='nvim'
+#dnf 
+alias dnfi="sudo dnf install -y "
+alias dnfr="sudo dnf remove "
+alias dnfs="sudo dnf search "
 #ls
 alias ls='lsd'
 alias lsl='ls -lh'
@@ -149,19 +162,24 @@ alias docker='sudo docker'
 #directory stack
 alias pd='pushd'
 alias dp='popd'
-# alias cat='ccat'
+alias cat='bat'
 #tldr
 alias tldr='tldr -t ocean'
+#calcurse
+alias calp='calcurse'
 #man retry to nvim
 export MANPAGER='nvim +Man!'
 #grpc config 
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 export LD_LIBRARY_PATH=/usr/local/lib
+#update default editor,don't use nano 
+export EDITOR=nvim
 #private env 
 alias nla='v ~/github/note/linux/all.sh'
 alias nlv='v ~/github/note/linux/nvim.sh'
 alias nlc='v ~/github/note/linux/command.sh'
 alias nlt='cd ~/github/note/tools'
+alias np='v ~/github/note/passwd/note.sh'
 #clash proxy
 ##export http_proxy=http://127.0.0.1:7890 && export https_proxy=http://127.0.0.1:7890
 ##unset http_proxy && unset https_proxy
@@ -179,17 +197,18 @@ function cs(){
     cd -$1
     ls
 }
-#有色cat
-function ccat() {
-    local style="monokai"
-    if [ $# -eq 0 ]; then
-        pygmentize -P style=$style -P tabsize=4 -f terminal256 -g
-    else
-        for NAME in $@; do
-            pygmentize -P style=$style -P tabsize=4 -f terminal256 -g "$NAME"
-        done
-    fi
-}
+
+#有色cat //abandon --------------------------------replace by bat
+# function ccat() {
+#     local style="monokai"
+#     if [ $# -eq 0 ]; then
+#         pygmentize -P style=$style -P tabsize=4 -f terminal256 -g
+#     else
+#         for NAME in $@; do
+#             pygmentize -P style=$style -P tabsize=4 -f terminal256 -g "$NAME"
+#         done
+#     fi
+# }
 #自动解压
 function auto-extract() {
 if [ -f $1 ] ; then
@@ -235,3 +254,16 @@ alias gdvim='git difftool -t nvimdiff'
 
 #weather reporter
 alias wea='curl wttr.in'
+#dust
+alias dup='dust'
+#duf
+alias dfp='duf'
+#copy to clipboard 
+alias pbcopy='xsel --clipboard --input'
+#paste from clipboard
+alias pbpaste='xsel --clipboard --output'
+
+source /home/aico/.config/broot/launcher/bash/br
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
