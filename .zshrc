@@ -1,10 +1,9 @@
-# p10k github: https://github.com/romkatv/powerlevel10k
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -16,8 +15,8 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="jonathan"
-ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME="jonathan"
+# ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -179,6 +178,7 @@ export EDITOR=nvim
 alias nla='v ~/github/note/linux/all.sh'
 alias nlv='v ~/github/note/linux/nvim.sh'
 alias nlc='v ~/github/note/linux/command.sh'
+alias nlk='v ~/github/note/linux/kernel.sh'
 alias nlt='cd ~/github/note/tools'
 alias np='v ~/github/note/passwd/note.sh'
 #clash proxy
@@ -191,6 +191,8 @@ eval $(thefuck --alias)
 for i in {0..9}; do bindkey -r "^[$i"; done
 #node
 export PATH=$PATH:/usr/local/node/bin
+#grpc
+export PATH=$PATH:/home/aico/go/bin
 #easy function
 function cl { cd $1; ls; }
 #cd using dir stack
@@ -223,7 +225,8 @@ if [ -f $1 ] ; then
         *.tar)       tar -xvf $1     ;;
         *.tbz2)      tar -xvjf $1    ;;
         *.tgz)       tar -xvzf $1    ;;
-        *.zip)       unzip $1       ;;
+        #消除中文乱码
+        *.zip)       unzip -O cp936 $1       ;;
         *.Z)         uncompress $1  ;;
         *.7z)        7z x $1        ;;
         *)           echo "don't know how to extract '$1'..." ;;
@@ -263,8 +266,14 @@ alias dfp='duf'
 alias pbcopy='xsel --clipboard --input'
 #paste from clipboard
 alias pbpaste='xsel --clipboard --output'
+# google-chorme 
+alias google='google-chrome'
+# xdg-open any 
+alias open='xdg-open'
+# redis client 
+alias redis='sudo /snap/bin/redis-desktop-manager.rdm'
 
 source /home/aico/.config/broot/launcher/bash/br
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

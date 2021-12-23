@@ -12,13 +12,60 @@ call plug#begin('~/.local/share/nvim/plugged')
     " clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/12.0.1/clangd_12.0.1/bin/clangd"
 " }
 
-"copilot AI"
-Plug 'github/copilot.vim'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""shell语法检查
+" vim run :CocInstall coc-diagnostic
+" vim run :CocConfig
+" add following to {}
+"   diagnostic-languageserver.filetypes": {
+    "vim": "vint",
+    "email": "languagetool",
+    "markdown": [ "write-good", "markdownlint" ],
+    "sh": "shellcheck",
+    "elixir": ["mix_credo", "mix_credo_compile"],
+    "eelixir": ["mix_credo", "mix_credo_compile"],
+    "php": ["phpstan", "psalm"],
+    "yaml": [ "yamllint" ],
+    "cmake": [ "cmake-lint", "cmakelint" ],
+    "systemd": "systemd-analyze"
+  "},
+  "diagnostic-languageserver.formatFiletypes": {
+    "dart": "dartfmt",
+    "elixir": "mix_format",
+    "eelixir": "mix_format",
+    "python": ["black", "isort"],
+    "lua": "lua-format",
+    "sh": "shfmt",
+    "blade": "blade-formatter",
+    "cmake": "cmake-format"
+  "}
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""k8s yaml自动补全与语法检查
+" :CocInstall coc-yaml
+" :CocConfig
+" "languageserver": {
+"     "golang": {
+"       "command": "gopls",
+"       "rootPatterns": ["go.mod"],
+"       "filetypes": ["go"]
+"     }
+" },
+"
+" "yaml.schemas": {
+"     "kubernetes": "/*.yaml"
+" }
 
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""plugin 2
+if has('nvim')
+  Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'gelguy/wilder.nvim'
+endif
 Plug 'uarun/vim-protobuf'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" 配色插件
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'morhetz/gruvbox'
 
@@ -34,16 +81,18 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'windwp/nvim-autopairs', {'commit': 'dffcd00e'}
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-abolish'
-Plug 'chaoren/vim-wordmotion'
-Plug 'terryma/vim-expand-region'
-Plug 'AndrewRadev/splitjoin.vim'
+Plug 'tpope/vim-abolish' "has add to nvim.sh
+Plug 'chaoren/vim-wordmotion' "has add to nvim.sh
+Plug 'terryma/vim-expand-region' "has add to nvim.sh
+Plug 'AndrewRadev/splitjoin.vim' "has add to nvim.sh
 Plug 'justinmk/vim-sneak'
-Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/vim-easy-align' "has add to nvim.sh
 Plug 'tpope/vim-fugitive'
 Plug 'liuchengxu/vista.vim'
-Plug 'voldikss/vim-floaterm'
+Plug 'voldikss/vim-floaterm' "has add to nvim.sh
 Plug 'luochen1990/rainbow'
+
+Plug 'github/copilot.vim'
 
 call plug#end()
 
@@ -142,7 +191,9 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "
 
 " =====快捷键=====
 
+" 将<leader>映射为;
 let mapleader = ";"
+
 noremap <Space> ;
 
 " 废弃快捷键
@@ -153,6 +204,7 @@ noremap Q <Nop>
 " 快速保存及退出
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>w :w<CR>
+nnoremap <Leader>e :wq<CR>
 " w!!用sudo保存
 cabbrev w!! w !sudo tee % > /dev/null
 
@@ -200,7 +252,6 @@ vnoremap > >gv
 
 " 复制当前行号
 nnoremap <silent> <C-g> :let @+ = join([expand('%'), line(".")], ':')\|:echo @+<CR>
-
 map Y y$
 
 " 粘贴不覆盖
@@ -360,11 +411,76 @@ nnoremap <silent><nowait><expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 " coc-translator
-nmap <Leader>t <Plug>(coc-translator-p)
-vmap <Leader>t <Plug>(coc-translator-pv)
+nmap gt <Plug>(coc-translator-p)
+vmap gt <Plug>(coc-translator-pv)
 
 " coc-explorer
 nnoremap <C-\> :CocCommand explorer<CR>
+
+" =====wilder.nvim=====
+
+call wilder#setup({'modes': [':', '/', '?']})
+
+call wilder#set_option('pipeline', [
+  \ wilder#branch(
+  \   {ctx, x -> empty(x) ? '' : v:false},
+  \   {ctx, x -> index(['e', 'v', 'vs'], x) >= 0 ? '' : v:false},
+  \   wilder#substitute_pipeline({
+  \     'pipeline': wilder#python_search_pipeline({
+  \       'skip_cmdtype_check': 1,
+  \       'pattern': wilder#python_fuzzy_pattern({
+  \         'start_at_boundary': 0,
+  \       }),
+  \     }),
+  \   }),
+  \   wilder#cmdline_pipeline({
+  \     'fuzzy': 1,
+  \     'set_pcre2_pattern': 1,
+  \     'sorter': wilder#python_difflib_sorter(),
+  \   }),
+  \   wilder#python_search_pipeline({
+  \     'pattern': wilder#python_fuzzy_pattern({
+  \       'start_at_boundary': 0,
+  \     }),
+  \   }),
+  \ ),
+\ ])
+
+let s:highlighters = [
+  \ wilder#pcre2_highlighter(),
+\ ]
+
+let s:popupmenu_renderer = wilder#popupmenu_renderer({
+  \ 'highlights': {
+  \    'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#f4468f'}]),
+  \ },
+  \ 'highlighter': s:highlighters,
+  \ 'left': [
+  \   ' ',
+  \   wilder#popupmenu_devicons(),
+  \ ],
+  \ 'right': [
+  \   ' ',
+  \   wilder#popupmenu_scrollbar(),
+  \ ],
+\ })
+
+let s:wildmenu_renderer = wilder#wildmenu_renderer({
+  \ 'highlights': {
+  \    'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#f4468f'}]),
+  \  },
+  \ 'highlighter': s:highlighters,
+  \ 'apply_incsearch_fix': 1,
+\ })
+
+call wilder#set_option('renderer', wilder#renderer_mux({
+  \ ':': s:popupmenu_renderer,
+  \ '/': s:wildmenu_renderer,
+  \ 'substitute': s:wildmenu_renderer,
+\ }))
+
+cnoremap <expr> / wilder#can_accept_completion() ? wilder#accept_completion(0) : "/"
+
 
 " =====Airline=====
 
@@ -425,6 +541,9 @@ nmap ga <Plug>(EasyAlign)
 let g:floaterm_width = 0.9
 let g:floaterm_height = 0.9
 let g:floaterm_keymap_toggle = '<F12>'
+let g:floaterm_keymap_new    = '<F7>'
+let g:floaterm_keymap_prev   = '<F8>'
+let g:floaterm_keymap_next   = '<F9>'
 
 " =====chaoren/vim-wordmotion=====
 
@@ -569,6 +688,9 @@ vnoremap <Left> <Nop>
 vnoremap <Right> <Nop>
 vnoremap <Up> <Nop>
 
+" 映射（）的使用方式
+inoremap <C-K> ()<ESC>i
+
 " =====bufferline=====
 nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
 nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
@@ -615,3 +737,70 @@ call append(line(".")+7, "//----------------------------------")
 endif
 endfunc
 autocmd BufNewfile * normal G
+
+" ===== vim command auto-pair and auto-complete ===== plugin 2
+call wilder#setup({'modes': [':', '/', '?']})
+
+call wilder#set_option('pipeline', [
+  \ wilder#branch(
+  \   wilder#python_file_finder_pipeline({
+  \     'file_command': {_, arg -> stridx(arg, '.') != -1 ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
+  \     'dir_command': ['fd', '-td'],
+  \     'filters': ['fuzzy_filter', 'difflib_sorter'],
+  \   }),
+  \   wilder#substitute_pipeline({
+  \     'pipeline': wilder#python_search_pipeline({
+  \       'skip_cmdtype_check': 1,
+  \       'pattern': wilder#python_fuzzy_pattern({
+  \         'start_at_boundary': 0,
+  \       }),
+  \     }),
+  \   }),
+  \   wilder#cmdline_pipeline({
+  \     'fuzzy': 1,
+  \     'set_pcre2_pattern': 1,
+  \   }),
+  \   [
+  \     wilder#check({_, x -> empty(x)}),
+  \     wilder#history(),
+  \   ],
+  \   wilder#python_search_pipeline({
+  \     'pattern': wilder#python_fuzzy_pattern({
+  \       'start_at_boundary': 0,
+  \     }),
+  \   }),
+  \ ),
+\ ])
+
+let s:highlighters = [
+  \ wilder#pcre2_highlighter(),
+\ ]
+
+let s:popupmenu_renderer = wilder#popupmenu_renderer({
+  \ 'highlights': {
+  \    'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#f4468f'}]),
+  \ },
+  \ 'highlighter': s:highlighters,
+  \ 'left': [
+  \   ' ',
+  \   wilder#popupmenu_devicons(),
+  \ ],
+  \ 'right': [
+  \   ' ',
+  \   wilder#popupmenu_scrollbar(),
+  \ ],
+\ })
+
+let s:wildmenu_renderer = wilder#wildmenu_renderer({
+  \ 'highlights': {
+  \    'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#f4468f'}]),
+  \  },
+  \ 'highlighter': s:highlighters,
+\ })
+
+call wilder#set_option('renderer', wilder#renderer_mux({
+  \ ':': s:popupmenu_renderer,
+  \ '/': s:wildmenu_renderer,
+  \ 'substitute': s:wildmenu_renderer,
+\ }))
+
