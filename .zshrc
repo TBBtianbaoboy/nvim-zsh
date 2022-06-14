@@ -126,7 +126,7 @@ source $ZSH/oh-my-zsh.sh
 alias v='nvim'
 alias vi='nvim'
 alias vim='nvim'
-#dnf 
+#dnf
 alias dnfi="sudo dnf install -y "
 alias dnfr="sudo dnf remove "
 alias dnfs="sudo dnf search "
@@ -169,18 +169,20 @@ alias tldr='tldr -t ocean'
 alias calp='calcurse'
 #man retry to nvim
 export MANPAGER='nvim +Man!'
-#grpc config 
+#grpc config
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 export LD_LIBRARY_PATH=/usr/local/lib
-#update default editor,don't use nano 
+#update default editor,don't use nano
 export EDITOR=nvim
-#private env 
+export GLFW_IM_MODULE=ibus
+#private env
 alias nla='v ~/github/note/linux/all.sh'
 alias nlv='v ~/github/note/linux/nvim.sh'
 alias nlc='v ~/github/note/linux/command.sh'
 alias nlk='v ~/github/note/linux/kernel.sh'
 alias nlt='cd ~/github/note/tools'
 alias np='v ~/github/note/passwd/note.sh'
+alias n='v ~/github/note/personal/note.md'
 #clash proxy
 ##export http_proxy=http://127.0.0.1:7890 && export https_proxy=http://127.0.0.1:7890
 ##unset http_proxy && unset https_proxy
@@ -253,7 +255,12 @@ if [ -n "$1" ] ; then
     fi
 }
 
-#git diff with nvim 
+#neovide
+function neo(){
+    brr "neovide $1"
+}
+
+#git diff with nvim
 alias gdvim='git difftool -t nvimdiff'
 
 #weather reporter
@@ -262,16 +269,20 @@ alias wea='curl wttr.in'
 alias dup='dust'
 #duf
 alias dfp='duf'
-#copy to clipboard 
+#copy to clipboard
 alias pbcopy='xsel --clipboard --input'
 #paste from clipboard
 alias pbpaste='xsel --clipboard --output'
-# google-chorme 
+# google-chorme
 alias google='google-chrome'
-# xdg-open any 
+# xdg-open any
 alias open='xdg-open'
-# redis client 
+# redis client
 alias redis='sudo /snap/bin/redis-desktop-manager.rdm'
+# kitty view image/directory
+alias icat='kitty +kitten icat '
+# screen saver
+alias lock='xlock -mode random'
 
 source /home/aico/.config/broot/launcher/bash/br
 
